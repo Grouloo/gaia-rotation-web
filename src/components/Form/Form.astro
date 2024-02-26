@@ -18,7 +18,11 @@ type Props = {
 	}
 	cols: number
 	error: FormError
+	'hx-get'?: string
 	'hx-post'?: string
+	'hx-swap'?: string
+	'hx-target'?: string
+	'hx-params'?: '*' | 'none'
 }
 
 const { definition, error } = Astro.props
@@ -30,7 +34,11 @@ const query = new URLSearchParams(Astro.url.search)
 	id="form"
 	enctype="multipart/form-data"
 	method={!Astro.props['hx-post'] ? 'POST' : undefined}
+	hx-get={Astro.props['hx-get']}
 	hx-post={Astro.props['hx-post']}
+	hx-target={Astro.props['hx-target']}
+	hx-swap={Astro.props['hx-swap']}
+	hx-params={Astro.props['hx-params']}
 >
 	<Grid>
 		{
@@ -98,7 +106,10 @@ const query = new URLSearchParams(Astro.url.search)
 									type="checkbox"
 									id={name}
 									name={name}
-									value={error?.formData.get(name)?.toString()}
+									checked={
+										error?.formData.get(name)?.toString() ||
+										query.get(name) === 'true'
+									}
 								/>
 								<label for={name}>{field.label}</label>
 							</div>
@@ -133,24 +144,36 @@ const query = new URLSearchParams(Astro.url.search)
 								/>
 							</div>
 						),
-						EnumSelect: (c) => (
-							<div class="field">
-								<label for={name}>{field.label}</label>
-								<br />
-								<select
-									name={name}
-									id={name}
-									required={field.required}
-									value={
-										error?.formData.get(name)?.toString() || query.get(name)
-									}
-								>
-									{Object.entries(c.enum).map(([key, txt]) => (
-										<option value={key}>{txt}</option>
-									))}
-								</select>
-							</div>
-						),
+						EnumSelect: (c) => {
+							console.log(error?.formData.get('department'))
+
+							return (
+								<div class="field">
+									<label for={name}>{field.label}</label>
+									<br />
+									<select
+										name={name}
+										id={name}
+										required={field.required}
+										value={
+											error?.formData.get(name)?.toString() || query.get(name)
+										}
+									>
+										{Object.entries(c.enum).map(([key, txt]) => (
+											<option
+												value={key}
+												selected={
+													error?.formData.get(name)?.toString() === key ||
+													query.get(name) === key
+												}
+											>
+												{txt}
+											</option>
+										))}
+									</select>
+								</div>
+							)
+						},
 					})}
 					<Divider hidden />
 				</Cell>
@@ -161,7 +184,7 @@ const query = new URLSearchParams(Astro.url.search)
 	<Divider hidden />
 
 	<div class="form-footer">
-		<Button primary icon="send" loadOnClick>Submit</Button>
+		<Button primary icon="send">Submit</Button>
 	</div>
 
 	<script>

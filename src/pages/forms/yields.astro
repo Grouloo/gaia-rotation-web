@@ -1,0 +1,49 @@
+---
+import Form from '@components/Form/Form.astro'
+import { FieldConfig, onSubmit } from '@components/Form/Form'
+import { Ok } from 'shulk'
+
+const department = Astro.url.searchParams.get('department')! || ''
+const farmSize = Astro.url.searchParams.get('farmSize')! || 0
+const benefitsFromCommonAgriculturalPolicy =
+	Astro.url.searchParams.get('benefitsFromCommonAgriculturalPolicy')! || false
+
+const cultures = Astro.url.searchParams.get('cultures')! || ''
+const culturesList = cultures
+	.split(',')
+	.map((crop) => crop.trim())
+	.filter((data, i, arr) => arr.indexOf(data) === i)
+
+const yieldsFormRaw = culturesList.map((crop) => [
+	crop,
+	{
+		label: 'Rendement ' + crop,
+		config: FieldConfig.Number({ unit: 't / H' }),
+	},
+])
+
+const yieldsForm = Object.fromEntries(yieldsFormRaw)
+
+const formError = await onSubmit(Astro, yieldsForm, async (yields) => {
+	console.log({
+		department,
+		farmSize,
+		benefitsFromCommonAgriculturalPolicy,
+		cultures: culturesList,
+		yields: yields,
+	})
+	return Ok({})
+})
+---
+
+<>
+	<h2>Veuillez saisir les rendements de vos différentes cultures (2/2)</h2>
+
+	<Form
+		definition={yieldsForm}
+		cols={1}
+		error={formError}
+		hx-post=`/forms/yields?department=${department}&farmSize=${farmSize}&cultures=${cultures}&benefitsFromCommonAgriculturalPolicy=${benefitsFromCommonAgriculturalPolicy}`
+		hx-target="#form-content"
+	/>
+</>

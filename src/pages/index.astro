@@ -2,30 +2,34 @@
 import Layout from '@layouts/Layout.astro'
 import Segment from '@components/Segment.astro'
 import type { FormDefinition } from '@components/Form/Form'
-import { Culture, FranceRegion, type InputForm } from '@domain'
-import { FieldConfig } from '@components/Form/Form'
+import { FranceDepartments, type InputForm } from '@domain'
+import { FieldConfig, onSubmit } from '@components/Form/Form'
 import Form from '@components/Form/Form.astro'
+import { Ok } from 'shulk'
+import { useHuggingFace, useMyEasyFarm } from '@adapters'
+
+console.log('yooo')
+//const hf = await useHuggingFace()
+//hf.prompt('Hello')
+
+const myEasyFarmApi = useMyEasyFarm()
 
 const formDef: FormDefinition<InputForm> = {
-	region: {
-		label: 'Dans quelle région se situe votre exploitation ?',
+	department: {
+		label: 'Dans quel département se situe votre exploitation ?',
 		required: true,
-		config: FieldConfig.EnumSelect({ enum: FranceRegion }),
+		config: FieldConfig.EnumSelect({ enum: FranceDepartments }),
 	},
 	cultures: {
-		label: 'Que cultivez-vous ?',
+		label: 'Que cultivez-vous ? (séparez par des virgules)',
+		placeholder: 'Blé,Colza,Carottes',
 		required: true,
-		config: FieldConfig.EnumSelect({ enum: Culture }),
+		config: FieldConfig.Text({}),
 	},
 	farmSize: {
 		label: 'Quelle est la taille de votre exploitation ?',
 		required: true,
 		config: FieldConfig.Number({ unit: 'H' }),
-	},
-	yield: {
-		label: "Quel était votre rendement l'année dernière ?",
-		required: true,
-		config: FieldConfig.Number({ unit: 't/H' }),
 	},
 	benefitsFromCommonAgriculturalPolicy: {
 		label: 'Je bénéfie de la PAC',
@@ -33,10 +37,24 @@ const formDef: FormDefinition<InputForm> = {
 		config: FieldConfig.Checkbox({}),
 	},
 }
+
+const formError = await onSubmit(Astro, formDef, async (input) => {
+	console.log(input)
+	return Ok({})
+})
 ---
 
 <Layout title="GAIA Rotation">
-	<Segment>
-		<Form definition={formDef} cols={1} error={undefined} />
+	<h1>Trouver une nouvelle rotation</h1>
+
+	<Segment id="form-content">
+		<h2>Veuillez fournir les informations de votre exploitation (1/2)</h2>
+		<Form
+			definition={formDef}
+			cols={1}
+			error={formError}
+			hx-get="/forms/yields"
+			hx-target="#form-content"
+		/>
 	</Segment>
 </Layout>

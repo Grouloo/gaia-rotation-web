@@ -1,7 +1,15 @@
 import { isURL } from '@domain'
 import type { AstroGlobal } from 'astro'
 import type { AstroComponentFactory } from 'astro/runtime/server/index.js'
-import { Err, Ok, match, union, type AsyncResult, type InferUnion } from 'shulk'
+import {
+	Err,
+	Ok,
+	match,
+	union,
+	type AsyncResult,
+	type InferUnion,
+	type Result,
+} from 'shulk'
 
 export const FieldConfig = union<{
 	Text: {}
@@ -70,72 +78,74 @@ export async function onSubmit<T>(
 						return Ok([name, undefined] as const)
 					}
 
-					return match(field.config).case({
-						Text: () => {
-							if (typeof value == 'string' && value !== '') {
-								const sanitized = value.trim()
+					return match(field.config)
+						.returnType<Result<string, [string, string | number | boolean]>>()
+						.case({
+							Text: () => {
+								if (typeof value == 'string' && value !== '') {
+									const sanitized = value.trim()
+									return Ok([name, sanitized] as const)
+								} else {
+									return Err(
+										`Property "${field.label}" should be a string. Received "${value}".`,
+									)
+								}
+							},
+							Number: () => {
+								if (typeof value == 'string' && value !== '') {
+									const sanitized = Number(value)
+									return Ok([name, sanitized] as const)
+								} else {
+									return Err(
+										`Property "${field.label}" should be a number. Received "${value}".`,
+									)
+								}
+							},
+							TextArea: () => {
+								if (typeof value == 'string' && value !== '') {
+									const sanitized = value.trim()
+									return Ok([name, sanitized] as const)
+								} else {
+									return Err(
+										`Property "${field.label}" should be a string. Received "${value}".`,
+									)
+								}
+							},
+							URL: () => {
+								if (isURL(value)) {
+									const sanitized = value
+									return Ok([name, sanitized] as const)
+								} else {
+									return Err(
+										`Property "${field.label}" should be a valid URL. Received "${value}".`,
+									)
+								}
+							},
+							Checkbox: () => {
+								const sanitized = !!value
 								return Ok([name, sanitized] as const)
-							} else {
-								return Err(
-									`Property "${field.label}" should be a string. Received "${value}".`,
-								)
-							}
-						},
-						Number: () => {
-							if (typeof value == 'string' && value !== '') {
-								const sanitized = value
-								return Ok([name, sanitized] as const)
-							} else {
-								return Err(
-									`Property "${field.label}" should be a number. Received "${value}".`,
-								)
-							}
-						},
-						TextArea: () => {
-							if (typeof value == 'string' && value !== '') {
-								const sanitized = value.trim()
-								return Ok([name, sanitized] as const)
-							} else {
-								return Err(
-									`Property "${field.label}" should be a string. Received "${value}".`,
-								)
-							}
-						},
-						URL: () => {
-							if (isURL(value)) {
-								const sanitized = value
-								return Ok([name, sanitized] as const)
-							} else {
-								return Err(
-									`Property "${field.label}" should be a valid URL. Received "${value}".`,
-								)
-							}
-						},
-						Checkbox: () => {
-							const sanitized = !!value as never as string
-							return Ok([name, sanitized] as const)
-						},
-						File: () => {
-							if (typeof value === 'object') {
-								const sanitized = value as never as string
-								return Ok([name, sanitized] as const)
-							} else {
-								return Err(
-									`Property "${field.label}" should be a file. Received "${value}".`,
-								)
-							}
-						},
-						EnumSelect: (c) => {
-							if (typeof value === 'string' && value in c.enum) {
-								const sanitized = value
-								return Ok([name, sanitized] as const)
-							} else {
-								return Err(
-									`Property "${field.label}" should be a valid option. Received "${value}".`,
-								)
-							}
-						},
-					})
+							},
+							File: () => {
+								if (typeof value === 'object') {
+									const sanitized = value as never as string
+									return Ok([name, sanitized] as const)
+								} else {
+									return Err(
+										`Property "${field.label}" should be a file. Received "${value}".`,
+									)
+								}
+							},
+							EnumSelect: (c) => {
+								if (typeof value === 'string' && value in c.enum) {
+									const sanitized = value
+									return Ok([name, sanitized] as const)
+								} else {
+									return Err(
+										`Property "${field.label}" should be a valid option. Received "${value}".`,
+									)
+								}
+							},
+						})
 				})
 				.reduce(
 					(prev, current) =>

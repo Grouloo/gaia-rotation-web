@@ -1,0 +1,76 @@
+---
+import Layout from '@layouts/Layout.astro'
+import Segment from '@components/Segment.astro'
+import type { FormDefinition } from '@components/Form/Form'
+import { type InputForm, type RotationWithTelepacForm } from '@domain'
+import { FieldConfig, onSubmit } from '@components/Form/Form'
+import Form from '@components/Form/Form.astro'
+import { Ok } from 'shulk'
+import { useMyEasyFarm } from '@adapters'
+import type { FranceDepartments } from '@domain'
+
+console.log('yooo')
+//const hf = await useHuggingFace()
+//hf.prompt('Hello')
+
+const myEasyFarmApi = useMyEasyFarm()
+
+const formDef: FormDefinition<RotationWithTelepacForm> = {
+	telepac: {
+		label: 'Fichier telepac',
+		required: true,
+		config: FieldConfig.File({ accept: ['xml'] }),
+	},
+}
+
+let inputForm: InputForm | undefined = undefined
+
+const formError = await onSubmit(Astro, formDef, async (input) => {
+	const parsedTelepac = await myEasyFarmApi.parseTelepac(input.telepac)
+
+	const department = Number(
+		parsedTelepac.department.code,
+	) as never as FranceDepartments
+
+	const farmSize = parsedTelepac.farm_area
+
+	const lastYearCulture = Object.values(parsedTelepac.crop_areas)[0]
+	const cultures = lastYearCulture
+		? Object.values(lastYearCulture)
+				.map((crop) => crop.crop_type.designator_fr)
+				.join(',')
+		: ''
+
+	inputForm = {
+		department,
+		cultures,
+		farmSize,
+		benefitsFromCommonAgriculturalPolicy: true,
+	}
+
+	// inputForm = {
+	// 	department: 84,
+	// 	cultures: 'Blé',
+	// 	farmSize: 5000,
+	// 	benefitsFromCommonAgriculturalPolicy: true,
+	// }
+
+	console.log(inputForm)
+
+	return Ok({})
+})
+
+if (inputForm) {
+	const queryString = new URLSearchParams(inputForm).toString()
+
+	return Astro.redirect(`/?${queryString}`)
+}
+---
+
+<Layout title="GAIA Rotation">
+	<h1>Pré-remplir en utilisant un fichier Telepac</h1>
+
+	<Segment id="form-content">
+		<Form definition={formDef} cols={1} error={formError} />
+	</Segment>
+</Layout>
