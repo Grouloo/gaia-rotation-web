@@ -63,7 +63,7 @@ const formError = await onSubmit(Astro, formDef, async (input) => {
 if (inputForm) {
 	const queryString = new URLSearchParams(inputForm).toString()
 
-	return Astro.redirect(`/?${queryString}`)
+	return Astro.redirect('/?' + queryString)
 }
 ---
 
