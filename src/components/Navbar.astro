@@ -1,0 +1,82 @@
+---
+
+---
+
+<nav>
+	<header>
+		<div class="col">
+			<h1>GAIA Rotation</h1>
+		</div>
+		<div class="col center">
+			<a href="/articles/">Get started</a>
+		</div>
+		<div class="col right"></div>
+	</header>
+</nav>
+
+<style>
+	nav {
+		height: 4rem;
+		/*transform: translateY(-100%) translateZ(0px);*/
+		 /* --tw-backdrop-saturate: saturate(1.5);
+		backdrop-filter: blur;  */
+		backdrop-filter: blur(25px);
+		background-color: rgba(255, 255, 255, 0.95)
+		height: auto;
+		top: 0;
+		left: 0;
+		right: 0;
+		position: sticky;
+		box-shadow: 0 12px 20px 6px rgb(104 112 118 / 0.08);
+		z-index: 9000;
+	}
+
+	nav a {
+		text-decoration: none;
+		color: #151515;
+		border-radius: 10px;
+		padding: 10px;
+		transition-duration: 0.25s;
+	}
+
+	nav a:hover {
+		color: #272727;
+		background-color: #ebebeb;
+	}
+
+	header {
+		padding-left: 1.5rem;
+		padding-right: 1.5rem;
+		gap: 1em;
+		justify-content: space-between;
+		align-items: center;
+		flex-wrap: nowrap;
+		flex-direction: row;
+		max-width: 1024px;
+		width: 100%;
+		display: flex;
+		z-index: 40;
+		position: relative;
+	}
+
+	.col {
+		text-decoration-line: none;
+		background-color: transparent;
+		white-space: nowrap;
+		justify-content: center;
+		align-items: center;
+		display: flex;
+		gap: 1rem;
+		flex-wrap: nowrap;
+		flex-direction: row;
+		height: 100%;
+	}
+
+	.center {
+		text-align: center;
+	}
+
+	.right {
+		text-align: right;
+	}
+</style>

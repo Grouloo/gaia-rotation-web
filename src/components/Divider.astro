@@ -1,0 +1,34 @@
+---
+interface Props {
+  hidden?: boolean
+}
+
+const classes: string[] = ["divider"]
+
+if (Astro.props.hidden) {
+  classes.push("hidden")
+} else {
+  classes.push("visible")
+}
+---
+
+<div class={classes.join(" ")}></div>
+
+<style>
+  .divider {
+    width: 30%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .visible {
+    border-top-style: solid;
+    border-top-color: #303030;
+    border-top-width: 1.5px;
+  }
+
+  .hidden {
+  }
+</style>
