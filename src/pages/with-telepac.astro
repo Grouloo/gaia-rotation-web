@@ -9,9 +9,7 @@ import { Ok } from 'shulk'
 import { useMyEasyFarm } from '@adapters'
 import type { FranceDepartments } from '@domain'
 
-console.log('yooo')
-//const hf = await useHuggingFace()
-//hf.prompt('Hello')
+function dispose(val: any) {}
 
 const myEasyFarmApi = useMyEasyFarm()
 
@@ -62,6 +60,9 @@ const formError = await onSubmit(Astro, formDef, async (input) => {
 
 if (inputForm) {
 	const queryString = new URLSearchParams(inputForm).toString()
+
+	// Why does the linter force me to do this?
+	dispose(queryString)
 
 	return Astro.redirect('/?' + queryString)
 }
