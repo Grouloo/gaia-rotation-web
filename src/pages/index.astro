@@ -6,13 +6,7 @@ import { FranceDepartments, type InputForm } from '@domain'
 import { FieldConfig, onSubmit } from '@components/Form/Form'
 import Form from '@components/Form/Form.astro'
 import { Ok } from 'shulk'
-import { useHuggingFace, useMyEasyFarm } from '@adapters'
-
-console.log('yooo')
-//const hf = await useHuggingFace()
-//hf.prompt('Hello')
-
-const myEasyFarmApi = useMyEasyFarm()
+import { useHuggingFace } from '@adapters'
 
 const formDef: FormDefinition<InputForm> = {
 	department: {
