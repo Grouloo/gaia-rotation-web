@@ -1,0 +1,43 @@
+---
+import { match } from 'shulk'
+
+interface Props {
+	width: number
+}
+
+const { width } = Astro.props
+
+const sizeClass = match(width).with({
+	4: 'one-third',
+	6: 'half-width',
+	12: 'full-width',
+	_otherwise: '',
+})
+---
+
+<div class={'cell ' + sizeClass}>
+	<slot />
+</div>
+
+<style>
+	.cell {
+		flex-grow: 0;
+		display: inherit;
+		overflow: none;
+	}
+
+	.one-third {
+		max-width: 33.3333%;
+		flex-basis: 33.3333%;
+	}
+
+	.half-width {
+		max-width: 50%;
+		flex-basis: 50%;
+	}
+
+	.full-width {
+		max-width: 100%;
+		flex-basis: 100%;
+	}
+</style>

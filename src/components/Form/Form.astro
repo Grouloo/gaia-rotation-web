@@ -1,0 +1,259 @@
+---
+import Divider from '../Divider.astro'
+import Button from '../Button.astro'
+import Grid from '../Grid/Grid.astro'
+import Cell from '../Grid/GridCell.astro'
+import { match } from 'shulk'
+import type { FieldConfig, FormError } from './Form'
+import Card from '../Card.astro'
+
+type Props = {
+	definition: {
+		[x: string]: {
+			required: boolean
+			label: string
+			placeholder?: string
+			config: FieldConfig['any']
+		}
+	}
+	cols: number
+	error: FormError
+	'hx-post'?: string
+}
+
+const { definition, error } = Astro.props
+
+const query = new URLSearchParams(Astro.url.search)
+---
+
+<form
+	id="form"
+	enctype="multipart/form-data"
+	method={!Astro.props['hx-post'] ? 'POST' : undefined}
+	hx-post={Astro.props['hx-post']}
+>
+	<Grid>
+		{
+			error && (
+				<>
+					<Card error>{error.message}</Card>
+					<Divider hidden />
+				</>
+			)
+		}
+		{
+			Object.entries(definition).map(([name, field]) => (
+				<Cell width={12}>
+					{match(field.config).case({
+						Text: () => (
+							<div class="field">
+								<label for={name}>{field.label}</label>
+
+								<input
+									type="text"
+									id={name}
+									name={name}
+									required={field.required}
+									placeholder={field.placeholder || field.label}
+									value={
+										error?.formData.get(name)?.toString() || query.get(name)
+									}
+								/>
+							</div>
+						),
+						Number: (c) => (
+							<div class="field">
+								<label for={name}>{field.label}</label>
+
+								<input
+									type="number"
+									id={name}
+									name={name}
+									required={field.required}
+									placeholder={field.placeholder || field.label}
+									value={
+										error?.formData.get(name)?.toString() || query.get(name)
+									}
+								/>
+								<span>{c.unit}</span>
+							</div>
+						),
+						URL: () => (
+							<div class="field">
+								<label for={name}>{field.label}</label>
+
+								<input
+									type="url"
+									id={name}
+									name={name}
+									required={field.required}
+									placeholder={field.placeholder || field.label}
+									value={error?.formData.get(name)?.toString()}
+								/>
+							</div>
+						),
+						Checkbox: () => (
+							<div>
+								<input
+									type="checkbox"
+									id={name}
+									name={name}
+									value={error?.formData.get(name)?.toString()}
+								/>
+								<label for={name}>{field.label}</label>
+							</div>
+						),
+						File: (c) => (
+							<div class="field">
+								<label for={name}>{field.label}</label>
+
+								<input
+									type="file"
+									accept={c.accept.join(',')}
+									id={name}
+									name={name}
+									required={field.required}
+									placeholder={field.placeholder || field.label}
+									value={error?.formData.get(name)?.toString()}
+								/>
+							</div>
+						),
+						TextArea: () => (
+							<div class="field">
+								<label for={name}>{field.label}</label>
+
+								<textarea
+									id={name}
+									name={name}
+									required={field.required}
+									placeholder={field.placeholder || field.label}
+									value={
+										error?.formData.get(name)?.toString() || query.get(name)
+									}
+								/>
+							</div>
+						),
+						EnumSelect: (c) => (
+							<div class="field">
+								<label for={name}>{field.label}</label>
+								<br />
+								<select
+									name={name}
+									id={name}
+									required={field.required}
+									value={
+										error?.formData.get(name)?.toString() || query.get(name)
+									}
+								>
+									{Object.entries(c.enum).map(([key, txt]) => (
+										<option value={key}>{txt}</option>
+									))}
+								</select>
+							</div>
+						),
+					})}
+					<Divider hidden />
+				</Cell>
+			))
+		}
+	</Grid>
+
+	<Divider hidden />
+
+	<div class="form-footer">
+		<Button primary icon="send" loadOnClick>Submit</Button>
+	</div>
+
+	<script>
+		document.querySelectorAll('.field').forEach((el) => {
+			el.addEventListener('click', () => el.querySelector('input')?.focus())
+		})
+	</script>
+</form>
+
+<style>
+	form {
+		width: 100%;
+		overflow: none;
+		/* display: flex; */
+	}
+
+	.field {
+		cursor: text;
+		transition-property: background;
+		transition-timing-function: ease;
+		transition-duration: 0.15s !important;
+		outline: 2px solid transparent;
+		outline-offset: 2px;
+		padding-top: 0.5rem;
+		padding-bottom: 0.5rem;
+		padding-left: 0.75rem;
+		padding-right: 0.75rem;
+		border-radius: 10px;
+		background-color: rgb(245, 244, 245);
+	}
+
+	.field:hover {
+		background-color: rgb(228, 228, 228);
+	}
+
+	.field:focus-visible {
+		background-color: rgb(245, 244, 245) !important;
+	}
+
+	.field label {
+		--tw-text-opacity: 1;
+		font-size: small;
+	}
+
+	input {
+		width: 100%;
+		border: none;
+		outline: none;
+		background-color: inherit;
+		font-size: medium;
+	}
+
+	input[type='number'] {
+		width: 90%;
+		border: none;
+		outline: none;
+		background-color: inherit;
+		font-size: medium;
+	}
+
+	input[type='checkbox'] {
+		border: none;
+		outline: none;
+		background-color: inherit;
+		font-size: medium;
+		width: 20px;
+		height: 20px;
+		position: relative;
+		vertical-align: middle;
+	}
+
+	textarea {
+		width: 100%;
+		border: none;
+		outline: none;
+		background-color: inherit;
+		font-size: medium;
+		font-family: inherit;
+		resize: vertical;
+	}
+
+	select {
+		width: 100%;
+		border: none;
+		outline: none;
+		background-color: inherit;
+		font-size: medium;
+		font-family: inherit;
+	}
+
+	.form-footer {
+		text-align: right;
+		padding-right: 10px;
+	}
+</style>

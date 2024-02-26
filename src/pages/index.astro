@@ -1,8 +1,42 @@
 ---
 import Layout from '@layouts/Layout.astro'
 import Segment from '@components/Segment.astro'
+import type { FormDefinition } from '@components/Form/Form'
+import { Culture, FranceRegion, type InputForm } from '@domain'
+import { FieldConfig } from '@components/Form/Form'
+import Form from '@components/Form/Form.astro'
+
+const formDef: FormDefinition<InputForm> = {
+	region: {
+		label: 'Dans quelle région se situe votre exploitation ?',
+		required: true,
+		config: FieldConfig.EnumSelect({ enum: FranceRegion }),
+	},
+	cultures: {
+		label: 'Que cultivez-vous ?',
+		required: true,
+		config: FieldConfig.EnumSelect({ enum: Culture }),
+	},
+	farmSize: {
+		label: 'Quelle est la taille de votre exploitation ?',
+		required: true,
+		config: FieldConfig.Number({ unit: 'H' }),
+	},
+	yield: {
+		label: "Quel était votre rendement l'année dernière ?",
+		required: true,
+		config: FieldConfig.Number({ unit: 't/H' }),
+	},
+	benefitsFromCommonAgriculturalPolicy: {
+		label: 'Je bénéfie de la PAC',
+		required: true,
+		config: FieldConfig.Checkbox({}),
+	},
+}
 ---
 
 <Layout title="GAIA Rotation">
-  <Segment>Hello, world!</Segment>
+	<Segment>
+		<Form definition={formDef} cols={1} error={undefined} />
+	</Segment>
 </Layout>

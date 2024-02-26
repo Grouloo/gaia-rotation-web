@@ -1,0 +1,120 @@
+---
+interface Props {
+  href?: string
+  'hx-get'?: string
+  'hx-patch'?: string
+  'hx-target'?: string
+  'x-on:click'?: string
+  onclick?: string
+  loadOnClick?: boolean
+  icon?: string
+  primary?: boolean
+  flat?: boolean
+  light?: boolean
+}
+
+const { onclick, loadOnClick, icon, primary, flat, light } = Astro.props
+
+let classes: string[] = ['btn']
+
+if (primary) {
+  classes.push('primary')
+} else {
+  classes.push('default')
+}
+
+if (flat) {
+  classes.push('flat')
+} else if (light) {
+  classes.push('light')
+} else {
+  classes.push('shadow')
+}
+---
+
+<button
+  onclick={onclick}
+  class={classes.join(' ')}
+  hx-get={Astro.props['hx-get']}
+  hx-patch={Astro.props['hx-patch']}
+  hx-target={Astro.props['hx-target']}
+  x-data={`{ loading: false, icon: '${icon || ''}' }`}
+  @click={loadOnClick && 'loading = true; '}
+  x-bind:class="loading ? 'is-loading' : ''"
+  x-on:click={Astro.props['x-on:click']}
+>
+  {
+    icon && (
+      <div class="label-left">
+        <span
+          class="material-symbols-outlined"
+          x-html="loading ? 'hourglass_empty' : icon"
+        />
+      </div>
+    )
+  }
+  <slot />
+</button>
+
+<style>
+  .btn {
+    font-family: system-ui, sans-serif;
+    font-size: medium;
+    text-decoration: none;
+    border: none;
+    transition-property: transform, color, background, background-color,
+      border-color, text-decoration-color, fill, stroke, opacity;
+    transition-timing-function: ease;
+    transition-duration: 0.25s;
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    font-weight: 400;
+    border-radius: 10px;
+    padding-left: 15px;
+    padding-right: 15px;
+    white-space: nowrap;
+    justify-content: center;
+    align-items: center;
+    min-width: 80px;
+    height: 40px;
+    box-sizing: border-box;
+    display: inline-flex;
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  .btn:hover {
+    opacity: 80%;
+  }
+
+  .label-left {
+    margin-right: 15px;
+    box-sizing: border-box;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .is-loading {
+    opacity: 60% !important;
+    cursor: wait;
+  }
+
+  .default {
+    background-color: rgb(212, 212, 216);
+    color: black;
+  }
+
+  .default.shadow {
+    box-shadow: rgba(212, 212, 216, 0.35) 0px 5px 15px;
+  }
+
+  .primary {
+    background-color: rgb(1, 112, 240);
+    color: white;
+  }
+
+  .primary.shadow {
+    box-shadow: rgba(1, 112, 240, 0.35) 0px 5px 15px;
+  }
+</style>

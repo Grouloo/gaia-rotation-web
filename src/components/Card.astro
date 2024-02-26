@@ -1,0 +1,58 @@
+---
+interface Props {
+	error?: boolean
+}
+
+const { error } = Astro.props
+
+const classes: string[] = ['card']
+
+if (error) {
+	classes.push('error')
+} else {
+	classes.push('default')
+}
+---
+
+<div class={classes.join(' ')}>
+	<div class="content">
+		<slot />
+	</div>
+</div>
+
+<style>
+	.card {
+		outline: 2px solid transparent;
+		outline-offset: 2px;
+		border-radius: 15px;
+		overflow: hidden;
+		flex-direction: column;
+		display: flex;
+		box-sizing: border-box;
+		position: relative;
+	}
+
+	.card.default {
+		box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+	}
+
+	.card.error {
+		color: rgb(237, 237, 237);
+		background-color: rgb(242, 19, 96);
+		box-shadow: rgba(242, 19, 96, 0.6) 0px 3px 8px;
+	}
+
+	.card .content {
+		-webkit-font-smoothing: auto;
+		text-align: left;
+		padding: 0.75rem;
+		overflow-wrap: break-word;
+		overflow-y: auto;
+		flex-direction: column;
+		flex: 1 1 auto;
+		width: 100%;
+		height: auto;
+		display: flex;
+		position: relative;
+	}
+</style>
