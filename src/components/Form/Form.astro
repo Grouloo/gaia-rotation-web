@@ -23,6 +23,7 @@ type Props = {
 	'hx-swap'?: string
 	'hx-target'?: string
 	'hx-params'?: '*' | 'none'
+	'x-on:submit'?: string
 }
 
 const { definition, error } = Astro.props
@@ -39,6 +40,7 @@ const query = new URLSearchParams(Astro.url.search)
 	hx-target={Astro.props['hx-target']}
 	hx-swap={Astro.props['hx-swap']}
 	hx-params={Astro.props['hx-params']}
+	x-on:submit={Astro.props['x-on:submit']}
 >
 	<Grid>
 		{
@@ -79,6 +81,7 @@ const query = new URLSearchParams(Astro.url.search)
 									name={name}
 									required={field.required}
 									placeholder={field.placeholder || field.label}
+									min={c.min}
 									value={
 										error?.formData.get(name)?.toString() || query.get(name)
 									}

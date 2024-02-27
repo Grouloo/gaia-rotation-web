@@ -29,7 +29,7 @@ const yieldsForm = Object.fromEntries(yieldsFormRaw)
 const formError = await onSubmit(Astro, yieldsForm, async (yields) => {
 	const hf = await useHuggingFace()
 
-console.log('Input', {
+	console.log('Input', {
 		department: department as any,
 		farmSize: Number(farmSize),
 		benefitsFromCommonAgriculturalPolicy:
@@ -47,31 +47,51 @@ console.log('Input', {
 		yields: yields as Record<string, number>,
 	})
 
-	
-
-	response = hfRes.mapErr(() =>  undefined).val
+	response = hfRes.mapErr(() => undefined).val
 
 	return hfRes.mapErr(() => 'AI not available.').map(() => ({}))
 })
 ---
 
-<>
-{!response &&
-	<><h2>Veuillez saisir les rendements de vos différentes cultures (2/2)</h2>
+<div x-data="{ loading: false }">
+	{
+		!response && (
+			<>
+				<div x-show="!loading">
+					<h2>
+						Veuillez saisir les rendements de vos différentes cultures (2/2)
+					</h2>
 
-	<Form
-		definition={yieldsForm}
-		cols={1}
-		error={formError}
-		hx-post=`/forms/yields?department=${department}&farmSize=${farmSize}&cultures=${cultures}&benefitsFromCommonAgriculturalPolicy=${benefitsFromCommonAgriculturalPolicy}`
-		hx-target="#form-content"
-	/></>}
+					<Form
+						definition={yieldsForm}
+						cols={1}
+						error={formError}
+						hx-post={`/forms/yields?department=${department}&farmSize=${farmSize}&cultures=${cultures}&benefitsFromCommonAgriculturalPolicy=${benefitsFromCommonAgriculturalPolicy}`}
+						hx-target="#form-content"
+						x-on:submit="loading = true"
+					/>
+				</div>
 
-	{response && 
-		<>
-			<h2>Votre prochaine rotation :</h2>
-
-			<p>{response}</p>
-		</>
+				<div x-show="loading">
+					<h2>Chargement en cours...</h2>
+					<p>On s'occupe de tout !</p>
+					<p>Faites-vous un café en attendant ☕️</p>
+				</div>
+			</>
+		)
 	}
-</>
+
+	{
+		response && (
+			<>
+				<h2>Votre prochaine rotation :</h2>
+
+				<div>
+					{response.split('\n').map((line) => (
+						<p>{line}</p>
+					))}
+				</div>
+			</>
+		)
+	}
+</div>

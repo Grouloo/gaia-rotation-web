@@ -22,7 +22,7 @@ const formDef: FormDefinition<InputForm> = {
 	farmSize: {
 		label: 'Quelle est la taille de votre exploitation ?',
 		required: true,
-		config: FieldConfig.Number({ unit: 'ha' }),
+		config: FieldConfig.Number({ unit: 'ha', min: 0 }),
 	},
 	benefitsFromCommonAgriculturalPolicy: {
 		label: 'Je bénéfie de la PAC',

@@ -30,7 +30,7 @@ const formError = await onSubmit(Astro, formDef, async (input) => {
 		parsedTelepac.department.code,
 	) as never as FranceDepartments
 
-	const farmSize = parsedTelepac.farm_area
+	const farmSize = Math.round(Number(parsedTelepac.farm_area))
 
 	const lastYearCulture = Object.values(parsedTelepac.crop_areas)[0]
 	const cultures = lastYearCulture
