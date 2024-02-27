@@ -4,7 +4,6 @@ import { FieldConfig, onSubmit } from '@components/Form/Form'
 import { useHuggingFace } from '@adapters'
 import { Markdown } from '@astropub/md'
 import { Err } from 'shulk'
-import Card from '@components/Card.astro'
 
 const department = Astro.url.searchParams.get('department')! || ''
 const farmSize = Astro.url.searchParams.get('farmSize')! || 0
@@ -31,6 +30,8 @@ const yieldsForm = Object.fromEntries(yieldsFormRaw)
 
 const formError = await onSubmit(Astro, yieldsForm, async (yields) => {
 	try {
+		const start = Date.now()
+
 		const hf = await useHuggingFace()
 
 		console.log('Input', {
@@ -53,7 +54,11 @@ const formError = await onSubmit(Astro, yieldsForm, async (yields) => {
 
 		response = hfRes.mapErr(() => undefined).val
 
-		return hfRes.mapErr(() => 'AI not available.').map(() => ({}))
+		const end = Date.now()
+
+		console.log('Temps: ', (end - start) / 1000 + 's')
+
+		return hfRes.mapErr(() => "L'IA n'est pas disponible.").map(() => ({}))
 	} catch (e) {
 		console.error(e)
 		return Err((e as Error).message)
@@ -100,6 +105,4 @@ const formError = await onSubmit(Astro, yieldsForm, async (yields) => {
 			</>
 		)
 	}
-
-	{formError?.message && <Card error>{formError.message}</Card>}
 </div>
