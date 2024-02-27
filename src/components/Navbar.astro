@@ -1,18 +1,19 @@
 ---
-
+const path = Astro.url.pathname
 ---
 
 <nav>
 	<header>
 		<div class="col">
-			<h1>GAIA Rotation</h1>
+			<h1>🌱 Trouve-ma-rotation</h1>
 		</div>
 		<div class="col center">
-			<a href="/">Commencer</a>
-						<a href="/with-telepac">Utiliser un telepac</a>
-
+			<a href="/" class={path === "/" ? "active" : ""}>Commencer</a>
+			<a href="/with-telepac" class={path === "/with-telepac" ? "active" : ""}>Utiliser un fichier Telepac</a>
 		</div>
-		<div class="col right"></div>
+		<div class="col right">			
+			<a href="/credits">Crédits</a>
+		</div>
 	</header>
 </nav>
 
@@ -33,9 +34,17 @@
 		z-index: 9000;
 	}
 
+	nav h1 {
+		background: linear-gradient( 140deg,#69cda3,#139e8c);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+	}
+
 	nav a {
 		text-decoration: none;
-		color: #151515;
+		text-transform: uppercase;
+		font-weight: bold;
+		color: #2c2c2c;
 		border-radius: 10px;
 		padding: 10px;
 		transition-duration: 0.25s;
@@ -44,6 +53,10 @@
 	nav a:hover {
 		color: #272727;
 		background-color: #ebebeb;
+	}
+
+	.active {
+		color: #3DC798!important;
 	}
 
 	header {

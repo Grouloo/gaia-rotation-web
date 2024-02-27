@@ -14,15 +14,15 @@ const formDef: FormDefinition<InputForm> = {
 		config: FieldConfig.EnumSelect({ enum: FranceDepartments }),
 	},
 	cultures: {
-		label: 'Que cultivez-vous ? (séparez par des virgules)',
-		placeholder: 'Blé,Colza,Carottes',
+		label: 'Que cultivez-vous ? (noms séparés par des virgules)',
+		placeholder: "Blé d'hiver,Colza,Carottes",
 		required: true,
 		config: FieldConfig.Text({}),
 	},
 	farmSize: {
 		label: 'Quelle est la taille de votre exploitation ?',
 		required: true,
-		config: FieldConfig.Number({ unit: 'H' }),
+		config: FieldConfig.Number({ unit: 'ha' }),
 	},
 	benefitsFromCommonAgriculturalPolicy: {
 		label: 'Je bénéfie de la PAC',
@@ -38,7 +38,7 @@ const formError = await onSubmit(Astro, formDef, async (input) => {
 ---
 
 <Layout title="GAIA Rotation">
-	<h1>Trouver une nouvelle rotation</h1>
+	<h1>Trouvons votre prochaine rotation !</h1>
 
 	<Segment id="form-content">
 		<h2>Veuillez fournir les informations de votre exploitation (1/2)</h2>

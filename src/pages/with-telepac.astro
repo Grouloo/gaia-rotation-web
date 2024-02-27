@@ -15,7 +15,7 @@ const myEasyFarmApi = useMyEasyFarm()
 
 const formDef: FormDefinition<RotationWithTelepacForm> = {
 	telepac: {
-		label: 'Fichier telepac',
+		label: 'Fichier Telepac .xml',
 		required: true,
 		config: FieldConfig.File({ accept: ['xml'] }),
 	},
@@ -52,8 +52,6 @@ const formError = await onSubmit(Astro, formDef, async (input) => {
 	// 	farmSize: 5000,
 	// 	benefitsFromCommonAgriculturalPolicy: true,
 	// }
-
-	console.log(inputForm)
 
 	return Ok({})
 })

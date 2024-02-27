@@ -83,6 +83,7 @@ const query = new URLSearchParams(Astro.url.search)
 										error?.formData.get(name)?.toString() || query.get(name)
 									}
 								/>
+
 								<span>{c.unit}</span>
 							</div>
 						),
@@ -184,7 +185,7 @@ const query = new URLSearchParams(Astro.url.search)
 	<Divider hidden />
 
 	<div class="form-footer">
-		<Button primary icon="send">Submit</Button>
+		<Button success icon="send">Envoyer</Button>
 	</div>
 
 	<script>
@@ -238,11 +239,19 @@ const query = new URLSearchParams(Astro.url.search)
 	}
 
 	input[type='number'] {
-		width: 90%;
+		width: calc(100% - 50px);
 		border: none;
 		outline: none;
 		background-color: inherit;
 		font-size: medium;
+	}
+
+	span {
+		font-weight: bold;
+		text-align: center;
+		margin-left: auto;
+		margin-right: auto;
+		width: 50px;
 	}
 
 	input[type='checkbox'] {
