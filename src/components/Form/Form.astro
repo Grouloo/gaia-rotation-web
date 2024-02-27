@@ -65,6 +65,7 @@ const query = new URLSearchParams(Astro.url.search)
 									name={name}
 									required={field.required}
 									placeholder={field.placeholder || field.label}
+									autocomplete="off"
 									value={
 										error?.formData.get(name)?.toString() || query.get(name)
 									}
