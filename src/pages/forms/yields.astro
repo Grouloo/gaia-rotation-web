@@ -2,6 +2,7 @@
 import Form from '@components/Form/Form.astro'
 import { FieldConfig, onSubmit } from '@components/Form/Form'
 import { useHuggingFace } from '@adapters'
+import { Markdown } from '@astropub/md'
 
 const department = Astro.url.searchParams.get('department')! || ''
 const farmSize = Astro.url.searchParams.get('farmSize')! || 0
@@ -87,9 +88,7 @@ const formError = await onSubmit(Astro, yieldsForm, async (yields) => {
 				<h2>Votre prochaine rotation :</h2>
 
 				<div>
-					{response.split('\n').map((line) => (
-						<p>{line}</p>
-					))}
+					<Markdown of={response} />
 				</div>
 			</>
 		)
