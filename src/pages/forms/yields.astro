@@ -4,6 +4,7 @@ import { FieldConfig, onSubmit } from '@components/Form/Form'
 import { useHuggingFace } from '@adapters'
 import { Markdown } from '@astropub/md'
 import { Err } from 'shulk'
+import Card from '@components/Card.astro'
 
 const department = Astro.url.searchParams.get('department')! || ''
 const farmSize = Astro.url.searchParams.get('farmSize')! || 0
@@ -99,4 +100,6 @@ const formError = await onSubmit(Astro, yieldsForm, async (yields) => {
 			</>
 		)
 	}
+
+	{formError?.message && <Card error>{formError.message}</Card>}
 </div>
