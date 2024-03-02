@@ -1,4 +1,5 @@
 export * from './__types__'
+export * from './telepac'
 
 // France regions indexed by their INSEE code
 export const FranceRegion = {

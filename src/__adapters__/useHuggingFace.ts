@@ -9,7 +9,7 @@ global.EventSource = eventsource
 
 export async function useHuggingFace() {
 	const app = await client(
-		'https://team-lfd-sia-pro-chatbot-g-pdf.hf.space/--replicas/wf94h/',
+		'https://gaia-mistral-crop-rotations.hf.space/--replicas/ajgnj/',
 		{
 			hf_token: 'hf_',
 		},

@@ -5,7 +5,7 @@ import type { FormDefinition } from '@components/Form/Form'
 import { type InputForm, type RotationWithTelepacForm } from '@domain'
 import { FieldConfig, onSubmit } from '@components/Form/Form'
 import Form from '@components/Form/Form.astro'
-import { Ok } from 'shulk'
+import { Err, Ok } from 'shulk'
 import { useMyEasyFarm } from '@adapters'
 import type { FranceDepartments } from '@domain'
 
@@ -24,27 +24,31 @@ const formDef: FormDefinition<RotationWithTelepacForm> = {
 let inputForm: InputForm | undefined = undefined
 
 const formError = await onSubmit(Astro, formDef, async (input) => {
-	const parsedTelepac = await myEasyFarmApi.parseTelepac(input.telepac)
+	const parsedTelepacResult = await myEasyFarmApi(input.telepac)
 
-	const department = Number(
-		parsedTelepac.department.code,
-	) as never as FranceDepartments
+	const inputFormResult = parsedTelepacResult.map((parsedTelepac) => {
+		const department = Number(
+			parsedTelepac.department.code,
+		) as never as FranceDepartments
 
-	const farmSize = Math.round(Number(parsedTelepac.farm_area))
+		const farmSize = Math.round(Number(parsedTelepac.farm_area))
 
-	const lastYearCulture = Object.values(parsedTelepac.crop_areas)[0]
-	const cultures = lastYearCulture
-		? Object.values(lastYearCulture)
-				.map((crop) => crop.crop_type.designator_fr)
-				.join(',')
-		: ''
+		const lastYearCulture = Object.values(parsedTelepac.crop_areas)[0]
+		const cultures = lastYearCulture
+			? Object.values(lastYearCulture)
+					.map((crop) => crop.crop_type.designator_fr)
+					.join(',')
+			: ''
 
-	inputForm = {
-		department,
-		cultures,
-		farmSize,
-		benefitsFromCommonAgriculturalPolicy: true,
-	}
+		inputForm = {
+			department,
+			cultures,
+			farmSize,
+			benefitsFromCommonAgriculturalPolicy: true,
+		}
+
+		return inputForm
+	})
 
 	// inputForm = {
 	// 	department: 84,
@@ -53,7 +57,13 @@ const formError = await onSubmit(Astro, formDef, async (input) => {
 	// 	benefitsFromCommonAgriculturalPolicy: true,
 	// }
 
-	return Ok({})
+	if (inputFormResult._state == 'Err') {
+		return Err(inputFormResult.val.message)
+	} else {
+		inputForm = inputFormResult.val
+
+		return Ok({})
+	}
 })
 
 if (inputForm) {
