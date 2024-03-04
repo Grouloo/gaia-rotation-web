@@ -2,12 +2,12 @@
 import Layout from '@layouts/Layout.astro'
 import Segment from '@components/Segment.astro'
 import type { FormDefinition } from '@components/Form/Form'
-import { FranceDepartments, type InputForm } from '@domain'
+import { FranceDepartments, type FarmInformationForm } from '@domain'
 import { FieldConfig, onSubmit } from '@components/Form/Form'
 import Form from '@components/Form/Form.astro'
 import { Ok } from 'shulk'
 
-const formDef: FormDefinition<InputForm> = {
+const formDef: FormDefinition<FarmInformationForm> = {
 	department: {
 		label: 'Dans quel département se situe votre exploitation ?',
 		required: true,
