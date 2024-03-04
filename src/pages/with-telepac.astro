@@ -2,18 +2,21 @@
 import Layout from '@layouts/Layout.astro'
 import Segment from '@components/Segment.astro'
 import type { FormDefinition } from '@components/Form/Form'
-import { type InputForm, type RotationWithTelepacForm } from '@domain'
+import {
+	TelepacCommands,
+	type FarmInformationForm,
+	type UploadTelepacForm,
+} from '@domain'
 import { FieldConfig, onSubmit } from '@components/Form/Form'
 import Form from '@components/Form/Form.astro'
-import { Err, Ok } from 'shulk'
-import { useMyEasyFarm } from '@adapters'
-import type { FranceDepartments } from '@domain'
+import { Ok } from 'shulk'
+import { XMLParser } from 'fast-xml-parser'
+
+const xmlParser = new XMLParser()
 
 function dispose(_val: any) {}
 
-const myEasyFarmApi = useMyEasyFarm()
-
-const formDef: FormDefinition<RotationWithTelepacForm> = {
+const formDef: FormDefinition<UploadTelepacForm> = {
 	telepac: {
 		label: 'Fichier Telepac .xml',
 		required: true,
@@ -21,34 +24,39 @@ const formDef: FormDefinition<RotationWithTelepacForm> = {
 	},
 }
 
-let inputForm: InputForm | undefined = undefined
+let inputForm: FarmInformationForm | undefined = undefined
 
 const formError = await onSubmit(Astro, formDef, async (input) => {
-	const parsedTelepacResult = await myEasyFarmApi(input.telepac)
+	const filledFarmInformationForm =
+		await TelepacCommands.fillFarmInformationForm(input, {
+			telepacParser: (xml) => xmlParser.parse(xml),
+		})
 
-	const inputFormResult = parsedTelepacResult.map((parsedTelepac) => {
-		const department = Number(
-			parsedTelepac.department.code,
-		) as never as FranceDepartments
+	inputForm = filledFarmInformationForm
+	return Ok({})
+	// const inputFormResult = parsedTelepacResult.map((parsedTelepac) => {
+	// 	const department = Number(
+	// 		parsedTelepac.department.code,
+	// 	) as never as FranceDepartments
 
-		const farmSize = Math.round(Number(parsedTelepac.farm_area))
+	// 	const farmSize = Math.round(Number(parsedTelepac.farm_area))
 
-		const lastYearCulture = Object.values(parsedTelepac.crop_areas)[0]
-		const cultures = lastYearCulture
-			? Object.values(lastYearCulture)
-					.map((crop) => crop.crop_type.designator_fr)
-					.join(',')
-			: ''
+	// 	const lastYearCulture = Object.values(parsedTelepac.crop_areas)[0]
+	// 	const cultures = lastYearCulture
+	// 		? Object.values(lastYearCulture)
+	// 				.map((crop) => crop.crop_type.designator_fr)
+	// 				.join(',')
+	// 		: ''
 
-		inputForm = {
-			department,
-			cultures,
-			farmSize,
-			benefitsFromCommonAgriculturalPolicy: true,
-		}
+	// 	inputForm = {
+	// 		department,
+	// 		cultures,
+	// 		farmSize,
+	// 		benefitsFromCommonAgriculturalPolicy: true,
+	// 	}
 
-		return inputForm
-	})
+	// 	return inputForm
+	// })
 
 	// inputForm = {
 	// 	department: 84,
@@ -57,13 +65,13 @@ const formError = await onSubmit(Astro, formDef, async (input) => {
 	// 	benefitsFromCommonAgriculturalPolicy: true,
 	// }
 
-	if (inputFormResult._state == 'Err') {
-		return Err(inputFormResult.val.message)
-	} else {
-		inputForm = inputFormResult.val
+	// if (inputFormResult._state == 'Err') {
+	// 	return Err(inputFormResult.val.message)
+	// } else {
+	// 	inputForm = inputFormResult.val
 
-		return Ok({})
-	}
+	// 	return Ok({})
+	// }
 })
 
 if (inputForm) {

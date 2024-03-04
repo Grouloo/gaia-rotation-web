@@ -1,9 +1,8 @@
-import type { Telepac } from '@domain'
 import { Err, type AsyncResult, Ok } from 'shulk'
 
 export const useMyEasyFarm =
 	() =>
-	async (telepac: File): AsyncResult<Error, Telepac> => {
+	async (telepac: File): AsyncResult<Error, {}> => {
 		try {
 			const formData = new FormData()
 			formData.append('xml_file', telepac)
@@ -31,4 +30,8 @@ type ApiRes = {
 	count: 28
 
 	response: string
-} & Telepac
+	department: string
+	region: string
+	farm_area: number
+	crop_areas: number[]
+}
